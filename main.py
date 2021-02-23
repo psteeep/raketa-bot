@@ -1,6 +1,27 @@
 import telebot
-from telebot import types
+from bittrex import BittrexClient
+
+NOTIFY_PAIR = "USD-DOGE"
+bot = telebot.TeleBot("1609840643:AAHNgrwRX9mWnFjkan1nVE1STBkvXAFOmOE")
+client = BittrexClient()
 
 
-bot = telebot.TeleBot()
+@bot.message_handler(commands=['start'])
+def welcome(message):
+    bot.send_message(message.chat.id,
+                     "Привет, {0.first_name}!\nЯ - <b>{1.first_name}</b>, бот створений щоб зробить з тебе успішного "
+                     "кріптотрейдера як Міша".format(
+                         message.from_user, bot.get_me()),
+                     parse_mode='html')
+    bot.send_message(message.chat.id, "Уведи пару, курс якої хоче дізнаться (формат USD-BTC)")
 
+
+@bot.message_handler(content_types=['text'])
+def crypto_currency_rate(message):
+    pair = "{}".format(message.text)
+    current_price = client.get_last_price(pair=pair)
+    bot.send_message(message.chat.id, "Курс на даний момент такий:\n {}={}".format(pair, current_price))
+
+
+if __name__ == "__main__":
+    bot.polling(none_stop=True)
