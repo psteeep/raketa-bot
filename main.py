@@ -1,5 +1,9 @@
 import telebot
 from bittrex import BittrexClient
+from bittrex import BittrexError
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 NOTIFY_PAIR = "USD-DOGE"
 bot = telebot.TeleBot("1609840643:AAHNgrwRX9mWnFjkan1nVE1STBkvXAFOmOE")
@@ -18,9 +22,12 @@ def welcome(message):
 
 @bot.message_handler(content_types=['text'])
 def crypto_currency_rate(message):
-    pair = "{}".format(message.text)
-    current_price = client.get_last_price(pair=pair)
-    bot.send_message(message.chat.id, "Курс на даний момент такий:\n {}={}".format(pair, current_price))
+    try:
+        pair = "{}".format(message.text)
+        current_price = client.get_last_price(pair=pair)
+        bot.send_message(message.chat.id, "Курс на даний момент такий:\n {}={}".format(pair, current_price))
+    except BittrexError:
+        bot.send_message(message.chat.id, "Не пиши дурню (спробуй ще)")
 
 
 if __name__ == "__main__":
