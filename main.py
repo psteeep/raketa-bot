@@ -14,10 +14,10 @@ client = BittrexClient()
 def welcome(message):
     bot.send_message(message.chat.id,
                      "Привет, {0.first_name}!\nЯ - <b>{1.first_name}</b>, бот створений щоб зробить з тебе успішного "
-                     "кріптотрейдера як Міша".format(
+                     "кріптотрейдера".format(
                          message.from_user, bot.get_me()),
                      parse_mode='html')
-    bot.send_message(message.chat.id, "Уведи пару, курс якої хоче дізнаться (формат USD-BTC)")
+    bot.send_message(message.chat.id, "Уведіть пару, курс якої хоче дізнаться (формат USD-BTC)")
 
 
 @bot.message_handler(content_types=['text'])
@@ -27,8 +27,10 @@ def crypto_currency_rate(message):
         current_price = client.get_last_price(pair=pair)
         bot.send_message(message.chat.id, "Курс на даний момент такий:\n {}={}".format(pair, current_price))
     except BittrexError:
-        bot.send_message(message.chat.id, "Не пиши дурню (спробуй ще)")
+        bot.send_message(message.chat.id, "Невірний ввід")
 
+# добавить конвертацію
+# добавить кнопки вибору між курсом і конвертацією
 
 if __name__ == "__main__":
     bot.polling(none_stop=True)
